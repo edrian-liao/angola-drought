@@ -1,0 +1,2 @@
+This repo stores my work for the Space Enabled Research Group in the MIT Media Lab. Here, I am using the lab's EVDT framework [^1] to improve Angola's Drought Decision Support System.
+[^1]: Borne from a systems architecture concept, the Environment, Vulnerability, Decision-making, Technology (EVDT) Framework, incorporates various dimensions to model a complex sustainability issue. This concept is created by the [lab](https://www.media.mit.edu/projects/integrated-complex-systems-modeling/overview/) itself.
