@@ -6,6 +6,7 @@ from rasterstats import zonal_stats
 import os
 import time
 import argparse
+import sys # Save print statements to text file
 
 def compute_ds_index(drought_dist):
     total_pixels = sum(drought_dist.values())
@@ -31,7 +32,7 @@ def generate_ds_index(startDate, endDate, shp_path, tif_path, output_path):
     date_range = pd.date_range(startDate, endDate, freq='M').strftime('%Y_%m')
     boundaries = gpd.read_file(shp_path)
     boundaries = boundaries.to_crs('EPSG:4326')
-    repeated_rows = [boundaries.iloc[:18]]
+    repeated_rows = [boundaries.iloc[:161]]
     output_df = pd.DataFrame()
 
     for date in date_range:
@@ -53,11 +54,11 @@ def generate_ds_index(startDate, endDate, shp_path, tif_path, output_path):
         output_df = pd.concat([output_df, new_df], ignore_index=True)
     
     output_gdf = gpd.GeoDataFrame(output_df, crs='epsg:4326')
-    gpd.GeoDataFrame.to_csv(output_gdf, os.path.join(output_path, f'ds_index_{date_range[0]}-{date_range[-1]}.csv'), index=False)
+    gpd.GeoDataFrame.to_csv(output_gdf, os.path.join(output_path, f'mun_ds_index_{date_range[0]}-{date_range[-1]}.csv'), index=False)
     
     end_time = time.time()
     elapsed_time = end_time - start_time
-    print(f"Script finished running in {elapsed_time} seconds")
+    print(f"Script finished running in {elapsed_time: .2f} seconds")
     return output_gdf
 
 def main():
@@ -70,7 +71,10 @@ def main():
 
     args = parser.parse_args()
 
-    generate_ds_index(args.startDate, args.endDate, args.shp_path, args.tif_path, args.output_path)
+    # Redirect stdout to a file
+    with open(os.path.join(args.output_path, f'output.txt'), 'w') as f:
+        sys.stdout = f
+        generate_ds_index(args.startDate, args.endDate, args.shp_path, args.tif_path, args.output_path)
 
 if __name__ == "__main__":
     main()
