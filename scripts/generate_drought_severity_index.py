@@ -7,6 +7,7 @@ import os
 import time
 import argparse
 import sys # Save print statements to text file
+import jenkspy # natural break method
 
 def compute_ds_index(drought_dist):
     total_pixels = sum(drought_dist.values())
@@ -50,7 +51,8 @@ def generate_ds_index(startDate, endDate, shp_path, tif_path, output_path):
         new_df['Drought Distribution'] = stats
         new_df['Drought Severity Index'] = [compute_ds_index(new_df['Drought Distribution'][i]) for i in range(len(new_df))]
         new_df['Norm Drought Severity Index'] = normalize(new_df['Drought Severity Index'], 0, 1)
-        new_df['Drought Severity Classes'] = pd.cut(new_df['Norm Drought Severity Index'], bins=4, labels=[0,1,2,3])
+        breaks = jenkspy.jenks_breaks(new_df['Norm Drought Severity Index'], n_classes=4)
+        new_df['Drought Severity Classes'] = pd.cut(new_df['Norm Drought Severity Index'], bins=breaks, labels=[0,1,2,3], include_lowest=True)
         output_df = pd.concat([output_df, new_df], ignore_index=True)
     
     output_gdf = gpd.GeoDataFrame(output_df, crs='epsg:4326')
